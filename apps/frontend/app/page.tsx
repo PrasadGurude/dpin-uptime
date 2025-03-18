@@ -167,7 +167,21 @@ function App() {
   );
 }
 
-function FeatureCard({ icon, title, description }) {
+// Added prop type definitions
+interface FeatureCardProps {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}
+
+interface PricingCardProps {
+  title: string;
+  price: string;
+  features: string[];
+  featured?: boolean;
+}
+
+function FeatureCard({ icon, title, description }: FeatureCardProps) {
   return (
     <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
       <div className="mb-4">{icon}</div>
@@ -177,7 +191,7 @@ function FeatureCard({ icon, title, description }) {
   );
 }
 
-function PricingCard({ title, price, features, featured = false }) {
+function PricingCard({ title, price, features, featured = false }: PricingCardProps) {
   return (
     <div className={`p-8 rounded-lg ${
       featured

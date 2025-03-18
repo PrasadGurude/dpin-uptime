@@ -1,9 +1,9 @@
 "use client";
 import React, { useState, useMemo } from 'react';
 import { ChevronDown, ChevronUp, Globe, Plus, Moon, Sun } from 'lucide-react';
-// import { useWebsites } from '@/hooks/useWebsites';
+import { useWebsites } from '@/hooks/useWebsites';
 import axios from 'axios';
-// import { API_BACKEND_URL } from '@/config';
+import { API_BACKEND_URL } from '@/config';
 import { useAuth } from '@clerk/nextjs';
 
 type UptimeStatus = "good" | "bad" | "unknown";
@@ -124,62 +124,62 @@ function WebsiteCard({ website }: { website: ProcessedWebsite }) {
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-//   const {websites, refreshWebsites} = useWebsites();
+  const {websites, refreshWebsites} = useWebsites();
   const { getToken } = useAuth();
 
-//   const processedWebsites = useMemo(() => {
-//     return websites.map(website => {
-//       // Sort ticks by creation time
-//       const sortedTicks = [...website.ticks].sort((a, b) => 
-//         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-//       );
+  const processedWebsites = useMemo(() => {
+    return websites.map(website => {
+      // Sort ticks by creation time
+      const sortedTicks = [...website.ticks].sort((a, b) => 
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
 
-//       // Get the most recent 30 minutes of ticks
-//       const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
-//       const recentTicks = sortedTicks.filter(tick => 
-//         new Date(tick.createdAt) > thirtyMinutesAgo
-//       );
+      // Get the most recent 30 minutes of ticks
+      const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+      const recentTicks = sortedTicks.filter(tick => 
+        new Date(tick.createdAt) > thirtyMinutesAgo
+      );
 
-//       // Aggregate ticks into 3-minute windows (10 windows total)
-//       const windows: UptimeStatus[] = [];
+      // Aggregate ticks into 3-minute windows (10 windows total)
+      const windows: UptimeStatus[] = [];
 
-//       for (let i = 0; i < 10; i++) {
-//         const windowStart = new Date(Date.now() - (i + 1) * 3 * 60 * 1000);
-//         const windowEnd = new Date(Date.now() - i * 3 * 60 * 1000);
+      for (let i = 0; i < 10; i++) {
+        const windowStart = new Date(Date.now() - (i + 1) * 3 * 60 * 1000);
+        const windowEnd = new Date(Date.now() - i * 3 * 60 * 1000);
         
-//         const windowTicks = recentTicks.filter(tick => {
-//           const tickTime = new Date(tick.createdAt);
-//           return tickTime >= windowStart && tickTime < windowEnd;
-//         });
+        const windowTicks = recentTicks.filter(tick => {
+          const tickTime = new Date(tick.createdAt);
+          return tickTime >= windowStart && tickTime < windowEnd;
+        });
 
-//         // Window is considered up if majority of ticks are up
-//         const upTicks = windowTicks.filter(tick => tick.status === 'Good').length;
-//         windows[9 - i] = windowTicks.length === 0 ? "unknown" : (upTicks / windowTicks.length) >= 0.5 ? "good" : "bad";
-//       }
+        // Window is considered up if majority of ticks are up
+        const upTicks = windowTicks.filter(tick => tick.status === 'Good').length;
+        windows[9 - i] = windowTicks.length === 0 ? "unknown" : (upTicks / windowTicks.length) >= 0.5 ? "good" : "bad";
+      }
 
-//       // Calculate overall status and uptime percentage
-//       const totalTicks = sortedTicks.length;
-//       const upTicks = sortedTicks.filter(tick => tick.status === 'Good').length;
-//       const uptimePercentage = totalTicks === 0 ? 100 : (upTicks / totalTicks) * 100;
+      // Calculate overall status and uptime percentage
+      const totalTicks = sortedTicks.length;
+      const upTicks = sortedTicks.filter(tick => tick.status === 'Good').length;
+      const uptimePercentage = totalTicks === 0 ? 100 : (upTicks / totalTicks) * 100;
 
-//       // Get the most recent status
-//       const currentStatus = windows[windows.length - 1];
+      // Get the most recent status
+      const currentStatus = windows[windows.length - 1];
 
-//       // Format the last checked time
-//       const lastChecked = sortedTicks[0]
-//         ? new Date(sortedTicks[0].createdAt).toLocaleTimeString()
-//         : 'Never';
+      // Format the last checked time
+      const lastChecked = sortedTicks[0]
+        ? new Date(sortedTicks[0].createdAt).toLocaleTimeString()
+        : 'Never';
 
-//       return {
-//         id: website.id,
-//         url: website.url,
-//         status: currentStatus,
-//         uptimePercentage,
-//         lastChecked,
-//         uptimeTicks: windows,
-//       };
-//     });
-//   }, [websites]);
+      return {
+        id: website.id,
+        url: website.url,
+        status: currentStatus,
+        uptimePercentage,
+        lastChecked,
+        uptimeTicks: windows,
+      };
+    });
+  }, [websites]);
 
   // Toggle dark mode
   React.useEffect(() => {
@@ -220,9 +220,9 @@ function App() {
         </div>
         
         <div className="space-y-4">
-          {/* {processedWebsites.map((website) => (
+          {processedWebsites.map((website) => (
             <WebsiteCard key={website.id} website={website} />
-          ))} */}
+          ))}
         </div>
       </div>
 
@@ -236,16 +236,16 @@ function App() {
 
             const token = await getToken();
             setIsModalOpen(false)
-            // axios.post(`${API_BACKEND_URL}/api/v1/website`, {
-            //     url,
-            // }, {
-            //     headers: {
-            //         Authorization: token,
-            //     },
-            // })
-            // .then(() => {
-            //     refreshWebsites();
-            // })
+            axios.post(`${API_BACKEND_URL}/api/v1/website`, {
+                url,
+            }, {
+                headers: {
+                    Authorization: token,
+                },
+            })
+            .then(() => {
+                refreshWebsites();
+            })
         }}
       />
     </div>
